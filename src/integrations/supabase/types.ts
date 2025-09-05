@@ -14,7 +14,226 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      nonstage_programs: {
+        Row: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      participations: {
+        Row: {
+          created_at: string | null
+          group_name: string | null
+          id: string
+          program_id: string
+          program_type: Database["public"]["Enums"]["program_type"]
+          student_id: string | null
+          team_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          group_name?: string | null
+          id?: string
+          program_id: string
+          program_type: Database["public"]["Enums"]["program_type"]
+          student_id?: string | null
+          team_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          group_name?: string | null
+          id?: string
+          program_id?: string
+          program_type?: Database["public"]["Enums"]["program_type"]
+          student_id?: string | null
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      results: {
+        Row: {
+          created_at: string | null
+          grade: Database["public"]["Enums"]["result_grade"] | null
+          id: string
+          participation_id: string | null
+          points_awarded: number
+          position: Database["public"]["Enums"]["result_position"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          grade?: Database["public"]["Enums"]["result_grade"] | null
+          id?: string
+          participation_id?: string | null
+          points_awarded?: number
+          position?: Database["public"]["Enums"]["result_position"] | null
+        }
+        Update: {
+          created_at?: string | null
+          grade?: Database["public"]["Enums"]["result_grade"] | null
+          id?: string
+          participation_id?: string | null
+          points_awarded?: number
+          position?: Database["public"]["Enums"]["result_position"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "results_participation_id_fkey"
+            columns: ["participation_id"]
+            isOneToOne: false
+            referencedRelation: "participations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scoring_rules: {
+        Row: {
+          default_points: number
+          id: number
+          position: Database["public"]["Enums"]["result_position"]
+        }
+        Insert: {
+          default_points: number
+          id?: number
+          position: Database["public"]["Enums"]["result_position"]
+        }
+        Update: {
+          default_points?: number
+          id?: number
+          position?: Database["public"]["Enums"]["result_position"]
+        }
+        Relationships: []
+      }
+      sports_programs: {
+        Row: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      stage_programs: {
+        Row: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["program_category"]
+          created_at?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          admission_no: string
+          category: Database["public"]["Enums"]["student_category"]
+          class: string
+          created_at: string | null
+          fest_id: string
+          id: string
+          name: string
+          team_id: string | null
+        }
+        Insert: {
+          admission_no: string
+          category: Database["public"]["Enums"]["student_category"]
+          class: string
+          created_at?: string | null
+          fest_id: string
+          id?: string
+          name: string
+          team_id?: string | null
+        }
+        Update: {
+          admission_no?: string
+          category?: Database["public"]["Enums"]["student_category"]
+          class?: string
+          created_at?: string | null
+          fest_id?: string
+          id?: string
+          name?: string
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +242,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      program_category: "junior" | "senior" | "super_senior" | "all"
+      program_type: "stage" | "nonstage" | "sports"
+      result_grade: "A" | "B" | "C"
+      result_position: "1st" | "2nd" | "3rd"
+      student_category: "junior" | "senior" | "super_senior"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +373,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      program_category: ["junior", "senior", "super_senior", "all"],
+      program_type: ["stage", "nonstage", "sports"],
+      result_grade: ["A", "B", "C"],
+      result_position: ["1st", "2nd", "3rd"],
+      student_category: ["junior", "senior", "super_senior"],
+    },
   },
 } as const
