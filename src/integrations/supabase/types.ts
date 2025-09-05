@@ -266,6 +266,39 @@ export type Database = {
           },
         ]
       }
+      detailed_results: {
+        Row: {
+          id: string
+          created_at: string | null
+          position: Database["public"]["Enums"]["result_position"] | null
+          grade: Database["public"]["Enums"]["result_grade"] | null
+          points_awarded: number
+          participation_id: string | null
+          program_name: string | null
+          program_type: Database["public"]["Enums"]["program_type"] | null
+          student_name: string | null
+          team_name: string | null
+          admission_no: string | null
+        }
+        Relationships: []
+      }
+      leaderboard: {
+        Row: {
+          team_id: string | null
+          team_name: string | null
+          total_points: number | null
+          rank: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
