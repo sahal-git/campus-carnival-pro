@@ -1,14 +1,34 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, Calendar, Trophy, Crown } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { getTeamsCount } from "@/queries/teams"
+import { getStudentsCount } from "@/queries/students"
+import { getProgramsCount } from "@/queries/programs"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const Index = () => {
+  const { data: teamsCount, isLoading: isLoadingTeamsCount } = useQuery({
+    queryKey: ["teamsCount"],
+    queryFn: getTeamsCount,
+  });
+
+  const { data: studentsCount, isLoading: isLoadingStudentsCount } = useQuery({
+    queryKey: ["studentsCount"],
+    queryFn: getStudentsCount,
+  });
+
+  const { data: programsCount, isLoading: isLoadingProgramsCount } = useQuery({
+    queryKey: ["programsCount"],
+    queryFn: getProgramsCount,
+  });
+
   const stats = [
-    { title: "Total Teams", value: "8", icon: Crown, color: "text-blue-600" },
-    { title: "Registered Students", value: "240", icon: Users, color: "text-green-600" },
-    { title: "Total Programs", value: "24", icon: Calendar, color: "text-purple-600" },
-    { title: "Completed Events", value: "12", icon: Trophy, color: "text-orange-600" },
-  ]
+    { title: "Total Teams", value: teamsCount, isLoading: isLoadingTeamsCount, icon: Crown, color: "text-blue-600" },
+    { title: "Registered Students", value: studentsCount, isLoading: isLoadingStudentsCount, icon: Users, color: "text-green-600" },
+    { title: "Total Programs", value: programsCount, isLoading: isLoadingProgramsCount, icon: Calendar, color: "text-purple-600" },
+    { title: "Completed Events", value: "0", isLoading: false, icon: Trophy, color: "text-orange-600" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -25,7 +45,11 @@ const Index = () => {
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              {stat.isLoading ? (
+                <Skeleton className="h-7 w-12" />
+              ) : (
+                <div className="text-2xl font-bold">{stat.value}</div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -38,19 +62,8 @@ const Index = () => {
             <CardDescription>Latest updates and changes</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">New student registered</span>
-                <Badge variant="secondary">Just now</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Dance competition results updated</span>
-                <Badge variant="secondary">2 mins ago</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Team Blue won football match</span>
-                <Badge variant="secondary">5 mins ago</Badge>
-              </div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>No recent activity.</p>
             </div>
           </CardContent>
         </Card>
@@ -61,19 +74,8 @@ const Index = () => {
             <CardDescription>Current leaderboard snapshot</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">🥇 Red Team</span>
-                <Badge>150 points</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">🥈 Blue Team</span>
-                <Badge variant="secondary">135 points</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">🥉 Green Team</span>
-                <Badge variant="secondary">120 points</Badge>
-              </div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+                <p>Leaderboard data is not yet available.</p>
             </div>
           </CardContent>
         </Card>

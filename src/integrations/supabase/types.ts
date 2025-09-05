@@ -236,7 +236,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      detailed_participations: {
+        Row: {
+          admission_no: string | null
+          created_at: string | null
+          id: string
+          program_id: string
+          program_name: string | null
+          program_type: Database["public"]["Enums"]["program_type"]
+          student_id: string | null
+          student_name: string | null
+          team_id: string | null
+          team_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
