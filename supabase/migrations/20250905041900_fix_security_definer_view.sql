@@ -1,61 +1,27 @@
 /*
-# [CRITICAL SECURITY FIX] Recreate View to Enforce User Permissions
-This script drops and recreates the `detailed_participations` view to resolve a critical security vulnerability. The original view used `SECURITY DEFINER`, which bypasses Row-Level Security (RLS) policies and runs with the permissions of the view's owner, not the user querying it. This could lead to unauthorized data access.
+# [CRITICAL SECURITY FIX] Alter View Security Setting
+This migration script addresses a critical security vulnerability by changing the security setting of the `detailed_participations` view from `SECURITY DEFINER` to `SECURITY INVOKER`.
 
 ## Query Description:
-This operation first `DROPS` the existing `detailed_participations` view and then `CREATES` it again. The new view will use the default `SECURITY INVOKER` behavior, ensuring that all queries respect the RLS policies of the current user. No data will be lost as this only affects the view definition.
+This operation alters the existing `detailed_participations` view to enforce the permissions and Row-Level Security (RLS) policies of the user querying the view, rather than the user who created it. This is the standard and secure behavior. This change does not affect any data but is critical for ensuring your data access policies are correctly applied.
 
 ## Metadata:
-- Schema-Category: "Structural"
-- Impact-Level: "Low"
+- Schema-Category: ["Security", "Structural"]
+- Impact-Level: ["High"]
 - Requires-Backup: false
-- Reversible: false (The old insecure view is dropped)
+- Reversible: true (by setting security_invoker to false)
 
 ## Structure Details:
-- **Dropped:** `public.detailed_participations` (view)
-- **Created:** `public.detailed_participations` (view)
+- View being affected: `public.detailed_participations`
 
 ## Security Implications:
-- RLS Status: This change is ESSENTIAL for RLS to function correctly on this view.
-- Policy Changes: No. It ensures existing policies are enforced.
-- Auth Requirements: Queries will now correctly use the querying user's auth context.
+- RLS Status: This change ensures that RLS policies on the underlying tables are correctly enforced.
+- Policy Changes: No
+- Auth Requirements: This change is essential for a secure authentication and authorization system.
 
 ## Performance Impact:
 - Indexes: None
 - Triggers: None
-- Estimated Impact: Negligible. View recreation is a metadata operation.
+- Estimated Impact: Negligible performance impact. This is a metadata change.
 */
-
--- Drop the existing insecure view
-DROP VIEW IF EXISTS public.detailed_participations;
-
--- Recreate the view with the correct security settings (SECURITY INVOKER is the default)
-CREATE VIEW public.detailed_participations AS
-SELECT
-  p.id,
-  p.created_at,
-  p.program_id,
-  p.program_type,
-  p.student_id,
-  s.name AS student_name,
-  s.admission_no,
-  p.team_id,
-  t.name AS team_name,
-  CASE
-    WHEN p.program_type = 'stage' THEN sp.title
-    WHEN p.program_type = 'nonstage' THEN nsp.title
-    WHEN p.program_type = 'sports' THEN sportsp.title
-    ELSE NULL
-  END AS program_name
-FROM
-  public.participations p
-LEFT JOIN
-  public.students s ON p.student_id = s.id
-LEFT JOIN
-  public.teams t ON p.team_id = t.id
-LEFT JOIN
-  public.stage_programs sp ON p.program_id = sp.id AND p.program_type = 'stage'
-LEFT JOIN
-  public.nonstage_programs nsp ON p.program_id = nsp.id AND p.program_type = 'nonstage'
-LEFT JOIN
-  public.sports_programs sportsp ON p.program_id = sportsp.id AND p.program_type = 'sports';
+ALTER VIEW public.detailed_participations SET (security_invoker = true);
